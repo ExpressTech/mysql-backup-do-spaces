@@ -1,0 +1,5 @@
+[default]
+access_key = 
+host_base = sgp1.digitaloceanspaces.com
+host_bucket = %(bucket)s.sgp1.digitaloceanspaces.com
+secret_key = 
