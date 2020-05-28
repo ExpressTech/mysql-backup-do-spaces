@@ -15,7 +15,7 @@ FILENAME=mysql-backup
 # name of the database to be backed up or --all-databases
 DATABASE='--all-databases'
 # when running via cron, the PATHs MIGHT be different. If you have a custom/manual MYSQL install, you should set this manually like MYSQLDUMPPATH=/usr/local/mysql/bin/
-MYSQLDUMPPATH=/usr/local/mysql/bin/
+MYSQLDUMPPATH=/usr/bin/
 #tmp path.
 TMP_PATH=/tmp/
 #set the expiry days for complete bucket 
@@ -23,6 +23,7 @@ EXPIRY_DAYS=30
 
 DATESTAMP=$(date +".%m.%d.%Y.%H.%M.%S.%s")
 
+CURDIR="${0%/*}"
 
 echo "Checking if s3cmd is present in current directory"
 if ! [ -d "./s3cmd" ]; then
@@ -54,11 +55,11 @@ echo "Done compressing the backup file."
 
 # upload all databases
 echo "Uploading the new backup..."
-./s3cmd/s3cmd --config .s3cfg put -f ${TMP_PATH}${FILENAME}${DATESTAMP}.tar.gz s3://${DONAME}/${DOPATH}
+./s3cmd/s3cmd --config ${CURDIR}/.s3cfg put -f ${TMP_PATH}${FILENAME}${DATESTAMP}.tar.gz s3://${DONAME}/${DOPATH}
 echo "New backup uploaded."
 
 echo "setting expiry date on the bucket"
-./s3cmd/s3cmd --config .s3cfg expire s3://${DONAME} --expiry-days ${EXPIRY_DAYS}
+./s3cmd/s3cmd --config ${CURDIR}/.s3cfg expire s3://${DONAME} --expiry-days ${EXPIRY_DAYS}
 
 echo "Removing the cache files..."
 # remove databases dump
